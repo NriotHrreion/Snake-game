@@ -12,7 +12,7 @@ public class Game {
 	private GuiInGame inGame;
 	
 	private boolean isGameFinish = false;
-	private int score = 0;
+	private int score = 4;
 	private Dir dir;
 	private List<Integer> bodyBlocks;
 	
@@ -24,7 +24,7 @@ public class Game {
 		this.dir = Dir.RIGHT;
 		
 		this.bodyBlocks = new ArrayList<>();
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < 7; i++) {
 			this.bodyBlocks.add(i);
 		}
 		
@@ -57,7 +57,7 @@ public class Game {
 								e.printStackTrace();
 							}
 						}
-					}, 0, 450); // run snake
+					}, 0, 1000); // run snake
 					break;
 				}
 			}

@@ -158,7 +158,7 @@ public class GuiInGame extends JFrame implements Gui {
 	    c.setContentAreaFilled(false);
 	  	c.setBorderPainted(false);
 		c.setEnabled(false);
-		JLabel lb_info = new JLabel("Copyright (c) NriotHrreion 2020");
+		JLabel lb_info = new JLabel("Copyright (c) NriotHrreion 2021");
 		lb_info.setFont(new Font("Arial", Font.ITALIC + Font.BOLD, 12));
 		lb_info.setForeground(Color.GRAY);
 		infoPanel.add(btn_exit);
