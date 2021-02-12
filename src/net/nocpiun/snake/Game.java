@@ -12,7 +12,8 @@ public class Game {
 	private GuiInGame inGame;
 	
 	private boolean isGameFinish = false;
-	private int score = 4;
+	private int score = 0;
+	private int speed = 0;
 	private Dir dir;
 	private List<Integer> bodyBlocks;
 	
@@ -24,7 +25,7 @@ public class Game {
 		this.dir = Dir.RIGHT;
 		
 		this.bodyBlocks = new ArrayList<>();
-		for(int i = 0; i < 7; i++) {
+		for(int i = 0; i < 3; i++) {
 			this.bodyBlocks.add(i);
 		}
 		
@@ -32,6 +33,28 @@ public class Game {
 	}
 	
 	private void initGuis() {
+		this.mainMenu.addActionListener(new GuiActionEvent() {
+			@Override
+			public void onComboBoxSelect(int selectLvl) {
+				switch(selectLvl) { // Difficult Level Choose
+				case 0: // Noob
+					Game.this.speed = 1000; // VERY VERY VERY EZ..... (jian dan dao hao wu you xi ti yan)
+					break;
+				case 1: // Easy
+					Game.this.speed = 500; // EZEZEZ!!! (ru guo ni Normal hai shi jue de kun nan, ke yi shi shi Easy)
+					break;
+				case 2: // Normal
+					Game.this.speed = 270; // Default Difficult (rong yi shang shou de nan du, ru guo ni wan de hen 6 de hua, ke yi shi shi Hard)
+					break;
+				case 3: // Hard
+					Game.this.speed = 150; // <== The Best Experience Difficult (zong zhi wo hen xi huan zhe ge nan du de ti yan, ha ha ha XD)
+					break;
+				case 4: // Master
+					Game.this.speed = 90; // God Like! (zui nb de nan du!!!)
+					break;
+				}
+			}
+		});
 		this.mainMenu.addButtonListener(new ButtonEvent() {
 			@Override
 			public void onClick(String name) {
@@ -50,14 +73,14 @@ public class Game {
 								if(!Game.this.isGameFinish) {
 									Game.this.update();
 									if(!Game.this.isGameFinish) {
-										Game.this.inGame.setTitle("Snake Game - Score: "+ Game.this.score);
+										Game.this.inGame.displayScore(Game.this.score);
 									}
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
-					}, 0, 1000); // run snake
+					}, 0, Game.this.speed); // run snake
 					break;
 				}
 			}
@@ -74,22 +97,45 @@ public class Game {
 				
 				for(int i = 0; i < Game.this.bodyBlocks.size(); i++) {
 					if(i + 1 == Game.this.bodyBlocks.size() && Game.this.bodyBlocks.get(i) == Game.this.food.foodBlockId) {
+						// eat food
+						
+						int headBlockId = Game.this.bodyBlocks.get(i);
+						
 						switch(Game.this.dir) {
 						case UP:
-							Game.this.bodyBlocks.add(Game.this.bodyBlocks.get(i) - 30);
+							if(headBlockId - 30 >= 0) {
+								Game.this.bodyBlocks.add(headBlockId - 30);
+							} else {
+								Game.this.gameFinish();
+							}
 							break;
 						case DOWN:
-							Game.this.bodyBlocks.add(Game.this.bodyBlocks.get(i) + 30);
+							if(headBlockId + 30 <= 1199) {
+								Game.this.bodyBlocks.add(headBlockId + 30);
+							} else {
+								Game.this.gameFinish();
+							}
 							break;
 						case LEFT:
-							Game.this.bodyBlocks.add(Game.this.bodyBlocks.get(i) - 1);
+							if(headBlockId % 30 != 0) {
+								Game.this.bodyBlocks.add(headBlockId - 1);
+							} else {
+								Game.this.gameFinish();
+							}
 							break;
 						case RIGHT:
-							Game.this.bodyBlocks.add(Game.this.bodyBlocks.get(i) + 1);
+							if((headBlockId + 1) % 30 != 0) {
+								Game.this.bodyBlocks.add(headBlockId + 1);
+							} else {
+								Game.this.gameFinish();
+							}
 							break;
 						}
 						
 						Game.this.score++;
+						if(Game.this.speed == 90) { // Master +2 score per food
+							Game.this.score++;
+						}
 						
 						Game.this.food.remove();
 						Game.this.food = new Food();
@@ -163,10 +209,10 @@ public class Game {
 	private void gameFinish() {
 		if(!isGameFinish) {
 			isGameFinish = true;
+			
+			this.inGame.setTitle("Snake Game - Dead");
+			Logger.log("Player dead, game finished");
 		}
-		
-		this.inGame.setTitle("Snake Game - Dead");
-		Logger.log("Player dead, game finished");
 	}
 	
 	private void keyDown(Key key) {
@@ -198,10 +244,21 @@ public class Game {
 		}
 		
 		public boolean spawn() {
-			int randomBlock = this.getRandom(0, 1199);
-			this.foodBlockId = randomBlock;
-			Game.this.inGame.setFoodBlock(this.foodBlockId);
-			return true;
+			if(!Game.this.isGameFinish) {
+				int randomBlock = this.getRandom(0, 1199);
+				this.foodBlockId = randomBlock;
+				
+				String blockName = Game.this.inGame.getBlockName(this.foodBlockId);
+				if(blockName == "none") {
+					Game.this.inGame.setFoodBlock(this.foodBlockId);
+				} else {
+					this.remove();
+					this.spawn();
+					return false;
+				}
+				return true;
+			}
+			return false;
 		}
 		
 		public void remove() {

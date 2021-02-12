@@ -3,7 +3,6 @@ package net.nocpiun.snake;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -16,6 +15,7 @@ public class GuiInGame extends JFrame implements Gui {
 	
 	private JPanel gamePanel;
 	private JPanel infoPanel;
+	private JLabel scoreLabel;
 	
 	public GuiActionEvent actionEventListener;
 	public ButtonEvent buttonEventListener;
@@ -97,19 +97,30 @@ public class GuiInGame extends JFrame implements Gui {
 		}
 	}
 	
+	public String getBlockName(int blockId) {
+		JPanel block = (JPanel)this.gamePanel.getComponent(blockId);
+		return block.getName();
+	}
+	
+	public void displayScore(int score) {
+		this.scoreLabel.setText("Score: "+ score);
+	}
+	
 	private void initGui() {
-		GuiInGame self = this;
 		this.setLayout(new GridLayout(1, 2));
 		
 		this.gamePanel = new JPanel(new GridLayout(40, 30));
-		gamePanel.setFocusable(true);
-		gamePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		this.gamePanel.setFocusable(true);
+		this.gamePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		this.gamePanel.setBackground(Color.WHITE);
 		for(int i = 0; i < 1200; i++) {
 			JPanel content = new JPanel();
 			content.setName("none");
+			content.setBorder(BorderFactory.createLineBorder(new Color(206, 206, 206)));
+			content.setBackground(null);
 			this.gamePanel.add(content);
 		}
-		gamePanel.addKeyListener(new KeyAdapter() {
+		this.gamePanel.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				Key key = null;
@@ -131,7 +142,7 @@ public class GuiInGame extends JFrame implements Gui {
 				
 				if(key != null) {
 					Logger.log("Key '"+ key.toString() +"' Pressed");
-					self.actionEventListener.onKeyDown(key);
+					GuiInGame.this.actionEventListener.onKeyDown(key);
 				}
 			}
 		});
@@ -141,6 +152,7 @@ public class GuiInGame extends JFrame implements Gui {
 		JButton btn_exit = new JButton("Exit");
 		btn_exit.setFocusPainted(false);
 		btn_exit.setFocusable(false);
+		btn_exit.setBackground(Color.WHITE);
 		btn_exit.setName("exit");
 		btn_exit.addActionListener(new ActionListener() {
 			@Override
@@ -161,9 +173,23 @@ public class GuiInGame extends JFrame implements Gui {
 		JLabel lb_info = new JLabel("Copyright (c) NriotHrreion 2021");
 		lb_info.setFont(new Font("Arial", Font.ITALIC + Font.BOLD, 12));
 		lb_info.setForeground(Color.GRAY);
-		infoPanel.add(btn_exit);
-		infoPanel.add(c);
-		infoPanel.add(lb_info);
+		JLabel lb_control = new JLabel("Press 'W A S D' to control the snake");
+		lb_control.setFont(new Font("Arial", Font.BOLD, 12));
+		JButton c1 = new JButton("                                                     "
+				+"            ");
+	    c1.setContentAreaFilled(false);
+	  	c1.setBorderPainted(false);
+		c1.setEnabled(false);
+		this.scoreLabel = new JLabel("Score: ");
+		this.scoreLabel.setFont(new Font("Arial", Font.BOLD, 15));
+		this.scoreLabel.setForeground(Color.BLACK);
+		
+		this.infoPanel.add(btn_exit);
+		this.infoPanel.add(c);
+		this.infoPanel.add(lb_info);
+		this.infoPanel.add(lb_control);
+		this.infoPanel.add(c1);
+		this.infoPanel.add(this.scoreLabel);
 		this.add(this.infoPanel);
 	}
 }
