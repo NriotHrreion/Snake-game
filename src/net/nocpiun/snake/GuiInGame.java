@@ -13,6 +13,7 @@ public class GuiInGame extends JFrame implements Gui {
 	private final int width = 600;
 	private final int height = 400;
 	
+	private Game game;
 	private JPanel gamePanel;
 	private JPanel infoPanel;
 	private JLabel scoreLabel;
@@ -20,7 +21,7 @@ public class GuiInGame extends JFrame implements Gui {
 	public GuiActionEvent actionEventListener;
 	public ButtonEvent buttonEventListener;
 	
-	public GuiInGame() {
+	public GuiInGame(Game main) {
 		super("Snake Game");
 		this.setSize(this.width, this.height);
 		this.setLocation(200, 130);
@@ -32,6 +33,8 @@ public class GuiInGame extends JFrame implements Gui {
 				System.exit(0);
 			}
 		});
+		
+		this.game = main;
 		
 		this.initGui();
 	}
@@ -140,10 +143,7 @@ public class GuiInGame extends JFrame implements Gui {
 					break;
 				}
 				
-				if(key != null) {
-					Logger.log("Key '"+ key.toString() +"' Pressed");
-					GuiInGame.this.actionEventListener.onKeyDown(key);
-				}
+				GuiInGame.this.actionEventListener.onKeyDown(key);
 			}
 		});
 		this.add(this.gamePanel);

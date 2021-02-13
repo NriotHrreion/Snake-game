@@ -6,22 +6,25 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.nocpiun.snake.util.*;
+import net.nocpiun.snake.robot.Robot;
 
 public class Game {
 	private GuiMainMenu mainMenu;
 	private GuiInGame inGame;
 	
-	private boolean isGameFinish = false;
+	public boolean isGameFinish = false;
+	public boolean isRobotMode = false;
 	private int score = 0;
 	private int speed = 0;
-	private Dir dir;
+	public Dir dir;
 	private List<Integer> bodyBlocks;
 	
 	private Food food;
+	private Robot robot;
 	
 	public Game() {
 		this.mainMenu = new GuiMainMenu();
-		this.inGame = new GuiInGame();
+		this.inGame = new GuiInGame(this);
 		this.dir = Dir.RIGHT;
 		
 		this.bodyBlocks = new ArrayList<>();
@@ -51,6 +54,11 @@ public class Game {
 					break;
 				case 4: // Master
 					Game.this.speed = 90; // God Like! (zui nb de nan du!!!)
+					break;
+				case 5: // Robot
+					Game.this.speed = 270;
+					Game.this.isRobotMode = true;
+					Game.this.robot = new Robot(); // Robot Auto Playing (h a c k e r)
 					break;
 				}
 			}
@@ -196,13 +204,18 @@ public class Game {
 				}
 			}
 		}
+		
 		for(int i = 0; i < this.bodyBlocks.size(); i++) {
 			if(i + 1 == this.bodyBlocks.size()) {
 				this.inGame.setBodyBlock(this.bodyBlocks.get(i), true);
+				if(this.isRobotMode) {
+					this.robot.onMove(this.bodyBlocks.get(i), this);
+				}
 			} else {
 				this.inGame.setBodyBlock(this.bodyBlocks.get(i), false);
 			}
 		}
+		
 		this.inGame.unsetBodyBlock(unsetBlock);
 	}
 	
@@ -215,7 +228,9 @@ public class Game {
 		}
 	}
 	
-	private void keyDown(Key key) {
+	public void keyDown(Key key) {
+		Logger.log("Key '"+ key.toString() +"' Pressed");
+		
 		switch(key) {
 		case W:
 			if(this.dir != Dir.DOWN) this.dir = Dir.UP;
@@ -255,6 +270,10 @@ public class Game {
 					this.remove();
 					this.spawn();
 					return false;
+				}
+				
+				if(Game.this.isRobotMode) {
+					Game.this.robot.onFoodChange(this.foodBlockId);
 				}
 				return true;
 			}

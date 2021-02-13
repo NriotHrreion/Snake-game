@@ -12,7 +12,7 @@ public class GuiMainMenu extends JFrame implements Gui {
 	private final int width = 400;
 	private final int height = 280;
 	
-	private final String[] levels = new String[] {"Noob", "Easy", "Normal", "Hard", "Master"};
+	private final String[] levels = new String[] {"Noob", "Easy", "Normal", "Hard", "Master", "Robot"};
 	
 	public GuiActionEvent actionEventListener;
 	public ButtonEvent buttonEventListener;
